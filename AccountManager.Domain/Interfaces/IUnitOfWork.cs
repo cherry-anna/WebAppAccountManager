@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace AccountManager.DataAccess.Repositories.Interfaces
+namespace AccountManager.Domain.Interfaces
 {
     public interface IUnitOfWork
     {

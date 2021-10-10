@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AccountManager.Domain.Interfaces;
 
-namespace AccountManager.DataAccess.Repositories.Interfaces
+
+namespace AccountManager.Domain.Interfaces
 {
     public interface IRepository<T, TKey> where T : Domain.Interfaces.IEntity<TKey>
     {

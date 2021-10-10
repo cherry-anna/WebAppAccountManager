@@ -1,4 +1,5 @@
-﻿using AccountManager.Domain.Models;
+﻿using AccountManager.Domain.Interfaces;
+using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Interfaces
 {

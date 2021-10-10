@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
 using System.Threading.Tasks;
+using AccountManager.Domain.Interfaces;
 using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Interfaces
 {
-    public interface IUserRepository : IRepository<User, int>
+    public interface IUserRepository : IRepository<User, string>
     {
         Task<User> GetByNameAsync(string name);
     }

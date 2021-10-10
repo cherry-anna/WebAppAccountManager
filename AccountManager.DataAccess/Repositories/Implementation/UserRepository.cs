@@ -6,7 +6,7 @@ using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Implementation
 {
-    public class UserRepository : BaseRepository<User, int, AccountManagerContext>, IUserRepository
+    public class UserRepository : BaseRepository<User, string, AccountManagerContext>, IUserRepository
     {
         public UserRepository(AccountManagerContext context) : base(context)
         {
@@ -14,7 +14,7 @@ namespace AccountManager.DataAccess.Repositories.Implementation
 
         public async Task<User> GetByNameAsync(string name)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Name == name);
+            return await _dbSet.FirstOrDefaultAsync(x => x.UserName == name);
         }
     }
 }

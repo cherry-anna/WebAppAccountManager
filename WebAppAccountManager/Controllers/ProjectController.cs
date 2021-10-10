@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.Domain.Models;
 using AccountManager.Dto;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,6 +16,7 @@ namespace AccountManager.Controllers
 {
     [Route("api/projects")]
     [ApiController]
+    //[Authorize]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
@@ -27,7 +29,7 @@ namespace AccountManager.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetProjectsAsync()
         {
             var items = await _projectService.GetProjectsAsync();
@@ -38,7 +40,9 @@ namespace AccountManager.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes =
+    JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<GetProjectDto>> CreateProjectAsync([FromBody] PostProjectDto itemDto)
         {
             var item = await _projectService.CreateProjectAsync(itemDto.Name, itemDto.Description);
@@ -48,6 +52,6 @@ namespace AccountManager.Controllers
         }
 
        
-        private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
     }
 }
