@@ -41,8 +41,8 @@ namespace AccountManager.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        [Authorize(AuthenticationSchemes =
-    JwtBearerDefaults.AuthenticationScheme)]
+    //    [Authorize(AuthenticationSchemes =
+    //JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<GetProjectDto>> CreateProjectAsync([FromBody] PostProjectDto itemDto)
         {
             var item = await _projectService.CreateProjectAsync(itemDto.Name, itemDto.Description);
