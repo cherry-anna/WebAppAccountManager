@@ -1,3 +1,5 @@
+using FluentValidation.AspNetCore;
+
 using AccountManager.BusinessLogic.Services.Implementation;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Context;
@@ -5,8 +7,6 @@ using AccountManager.DataAccess.Repositories.Implementation;
 using AccountManager.DataAccess.Repositories.Interfaces;
 using AccountManager.Domain.Models;
 using AccountManager.Profiles;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,7 +25,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Swashbuckle.AspNetCore.Swagger;
-using WebAppAccountManager.Extensions;
+using Microsoft.AspNetCore.Authentication;
+using AccountManager.AuthenticationHandlers;
+
 
 namespace WebAppAccountManager
 {
@@ -42,76 +44,81 @@ namespace WebAppAccountManager
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
-
-            services.AddSwaggerDocumentation();
-
-            
             services.AddDbContext<AccountManagerContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AccountManagerDB")));
 
-            // For Identity  
-            services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<AccountManagerContext>()
-                .AddDefaultTokenProviders();
-
-            // Adding Authentication  
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-
-            // Adding Jwt Bearer  
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidAudience = Configuration["JWT:ValidAudience"],
-                    ValidIssuer = Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
-                };
-            });
-
-            services.AddAuthorization(options =>
-            {
-                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
-              JwtBearerDefaults.AuthenticationScheme);
-                defaultAuthorizationPolicyBuilder =
-                    defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
-            });
-
+            services.AddIdentity<User, IdentityRole<int>>()  
+            .AddEntityFrameworkStores<AccountManagerContext>()
+            .AddDefaultTokenProviders();
             services.AddScoped<IProjectRepository, ProjectRepository>();
-            
 
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IUserService, UserService>();
+            
+           
+            services.AddAuthentication("Basic")
+               .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
+            services.AddControllers()
+                .AddFluentValidation(fvc =>
+                {
+                    fvc.RegisterValidatorsFromAssemblyContaining<Startup>();
+                });
+             
+            
+            
+            // Adding Authentication  
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAppAccountManager", Version = "v1" });
+                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "basic"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
+            });
+
+            
+                     
 
             services.AddAutoMapper(typeof(ProjectProfile));
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager)
         {
-            CreateRoles(serviceProvider).Wait();
+            ApplicationDbInitializer.SeedUsers(userManager);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwaggerDocumentation();
-                                
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAppAccountManager v1"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthentication();    
-            app.UseAuthorization();
+            app.UseAuthentication();
 
-            
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -120,45 +127,5 @@ namespace WebAppAccountManager
 
         }
 
-        private async Task CreateRoles(IServiceProvider serviceProvider)
-        {
-            //initializing custom roles 
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var UserManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            string[] roleNames = { "Admin", "Manager", "Member" };
-            IdentityResult roleResult;
-
-            foreach (var roleName in roleNames)
-            {
-                var roleExist = await RoleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
-                {
-                    //create the roles and seed them to the database: Question 1
-                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
-                }
-            }
-
-            //Here you could create a super user who will maintain the web app
-            var poweruser = new User
-            {
-
-                UserName = Configuration["AppSettings:UserName"],
-                Email = Configuration["AppSettings:UserEmail"],
-            };
-            //Ensure you have these values in your appsettings.json file
-            string userPWD = Configuration["AppSettings:UserPassword"];
-            var _user = await UserManager.FindByEmailAsync(Configuration["AppSettings:AdminUserEmail"]);
-
-            if (_user == null)
-            {
-                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
-                if (createPowerUser.Succeeded)
-                {
-                    //here we tie the new user to the role
-                    await UserManager.AddToRoleAsync(poweruser, "Admin");
-
-                }
-            }
-        }
     }
 }

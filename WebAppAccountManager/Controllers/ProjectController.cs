@@ -33,14 +33,13 @@ namespace AccountManager.Controllers
             var items = await _projectService.GetProjectsAsync();
 
             var result = _mapper.Map<IEnumerable<GetProjectDto>>(items);
-
+            //HttpContext.User
             return Ok(result);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        //[Authorize(AuthenticationSchemes =
-    //JwtBearerDefaults.AuthenticationScheme)]
+        
         public async Task<ActionResult<GetProjectDto>> CreateProjectAsync([FromBody] PostProjectDto itemDto)
         {
             var item = await _projectService.CreateProjectAsync(itemDto.Name, itemDto.Description);

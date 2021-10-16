@@ -17,10 +17,20 @@ namespace WebAppAccountManager
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
+
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+
+                    webBuilder.ConfigureKestrel(serverOptions =>
+                    {
+                        serverOptions.ConfigureHttpsDefaults(co =>
+                        co.SslProtocols = System.Security.Authentication.SslProtocols.Tls12);
+
+
+                    }).UseStartup<Startup>();
+
+
                 });
     }
 }

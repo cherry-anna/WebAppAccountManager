@@ -6,7 +6,7 @@ using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Implementation
 {
-    public class UserRepository : BaseRepository<User, string, AccountManagerContext>, IUserRepository
+    public class UserRepository : BaseRepository<User, int, AccountManagerContext>, IUserRepository
     {
         public UserRepository(AccountManagerContext context) : base(context)
         {

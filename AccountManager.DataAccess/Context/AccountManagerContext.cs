@@ -6,7 +6,7 @@ using AccountManager.Domain.Interfaces;
 
 namespace AccountManager.DataAccess.Context
 {
-    public class AccountManagerContext : IdentityDbContext<User, IdentityRole, string>, IUnitOfWork
+    public class AccountManagerContext : IdentityDbContext<User, IdentityRole<int>, int>, IUnitOfWork
     {
         //public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
@@ -17,24 +17,31 @@ namespace AccountManager.DataAccess.Context
         {
             //Database.EnsureDeleted();
             Database.EnsureCreated();
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Report>(b =>
+            modelBuilder.Entity<Report>(r =>
             {
-                b.HasKey(x => x.Id);
-                b.HasOne(x => x.Employee);
+                r.HasKey(x => x.Id);
+                r.HasOne(x => x.Employee);
                     //.WithMany(u => u.ToDoItems)
                     //.HasForeignKey(x => x.UserId);
-                b.Property(x => x.Description)
+                r.Property(x => x.Description)
                     .HasMaxLength(100);
             });
 
-            modelBuilder.Entity<User>(b =>
+            modelBuilder.Entity<User>(u =>
             {
-                b.HasKey(x => x.Id);
+                u.HasKey(x => x.Id);
+            });
+
+            modelBuilder.Entity<IdentityRole<int>>(r =>
+            {
+                r.HasKey(x => x.Id);
+                r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
             });
         }
     }
