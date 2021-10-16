@@ -15,7 +15,7 @@ namespace AccountManager.DataAccess.Context
 
         public AccountManagerContext(DbContextOptions<AccountManagerContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
 
         }
@@ -41,7 +41,7 @@ namespace AccountManager.DataAccess.Context
             modelBuilder.Entity<IdentityRole<int>>(r =>
             {
                 r.HasKey(x => x.Id);
-                r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
+                //r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
             });
         }
     }

@@ -10,11 +10,19 @@ namespace AccountManager.DataAccess.Context
 {
     public static class ApplicationDbInitializer
     {
-        public static void SeedUsers(UserManager<User> userManager)
+        public static void SeedUsers(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
-            if (userManager.FindByEmailAsync("abc@xyz.com").Result == null)
-            {
-                User user = new User
+            IdentityRole<int> identityRole;
+                identityRole = new IdentityRole<int>("Admin");
+           roleManager.CreateAsync(identityRole).Wait();
+            identityRole = new IdentityRole<int>("Manager");
+            roleManager.CreateAsync(identityRole).Wait();
+            identityRole = new IdentityRole<int>("Employee");
+            roleManager.CreateAsync(identityRole).Wait();
+
+            //if (userManager.FindByEmailAsync("admin@gmail.com").Result == null)
+            //{
+            User user = new User
                 {
                      UserName = "Admin",
                      Email = "admin@gmail.com",
@@ -27,7 +35,7 @@ namespace AccountManager.DataAccess.Context
                 {
                     userManager.AddToRoleAsync(user, "Admin").Wait();
                 }
-            }
+            //}
         }
 
 

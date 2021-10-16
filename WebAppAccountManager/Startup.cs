@@ -101,9 +101,9 @@ namespace WebAppAccountManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
-            ApplicationDbInitializer.SeedUsers(userManager);
+            ApplicationDbInitializer.SeedUsers(userManager,roleManager);
 
             if (env.IsDevelopment())
             {
