@@ -7,11 +7,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.Domain.Models;
-using AccountManager.Dto;
+using WebAppAccountManager.Dto;
+using System;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace AccountManager.Controllers
+namespace WebAppAccountManager.Controllers
 {
     [Route("api/projects")]
     [ApiController]
@@ -26,8 +28,8 @@ namespace AccountManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        //[Authorize]
+        [HttpGet("GetProject")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetProjectsAsync()
         {
             var items = await _projectService.GetProjectsAsync();
@@ -37,9 +39,11 @@ namespace AccountManager.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("CreateProject")]
+        //[Authorize(Policy = "BasicAuthentication")]
+        //[Authorize(AuthenticationSchemes = "BasicAuthentication")]
         [Authorize(Roles = "Admin")]
-        
+
         public async Task<ActionResult<GetProjectDto>> CreateProjectAsync([FromBody] PostProjectDto itemDto)
         {
             var item = await _projectService.CreateProjectAsync(itemDto.Name, itemDto.Description);
@@ -48,7 +52,16 @@ namespace AccountManager.Controllers
             return Ok(result);
         }
 
-       
+        [HttpPut("AddEmployeeToProject")]
+        [Authorize(Roles = "Admin")]
+
+        public async Task<ActionResult> AddEmployeeToProjectAsync([FromBody] AddEmployeeToProjectDto itemDto)
+        {
+            await _projectService.AddEmployeeToProjectAsync(itemDto.IdProject, itemDto.IdEmployee);
+            
+            return Ok();
+        }
+
         private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
     }
 }

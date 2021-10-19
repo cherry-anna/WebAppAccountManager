@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Repositories.Interfaces;
@@ -9,10 +10,11 @@ namespace AccountManager.BusinessLogic.Services.Implementation
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
-
-        public ProjectService(IProjectRepository projectRepository)
+        private readonly IEmployeeRepository _employeeRepository;
+        public ProjectService(IProjectRepository projectRepository, IEmployeeRepository employeeRepository)
         {
             _projectRepository = projectRepository;
+            _employeeRepository = employeeRepository;
         }
 
   
@@ -36,6 +38,21 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             await _projectRepository.UnitOfWork.SaveChangesAsync();
 
             return insertedItem;
+        }
+
+        public async Task AddEmployeeToProjectAsync(int idProject, int idEmployee)
+        {
+            Employee employee= await _employeeRepository.GetByIdAsync(idEmployee);
+            Project project = await _projectRepository.GetByIdAsync(idProject);
+
+
+            project.Employees.Add(employee);
+
+
+            await _projectRepository.UpdateAsync(project);
+            await _projectRepository.UnitOfWork.SaveChangesAsync();
+
+            
         }
     }
 }

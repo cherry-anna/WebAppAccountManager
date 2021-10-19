@@ -6,7 +6,7 @@ using AccountManager.DataAccess.Context;
 using AccountManager.DataAccess.Repositories.Implementation;
 using AccountManager.DataAccess.Repositories.Interfaces;
 using AccountManager.Domain.Models;
-using AccountManager.Profiles;
+using WebAppAccountManager.Profiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,8 +26,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication;
-using AccountManager.AuthenticationHandlers;
-
+using WebAppAccountManager.AuthenticationHandlers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAppAccountManager
 {
@@ -45,30 +45,37 @@ namespace WebAppAccountManager
         {
 
             services.AddDbContext<AccountManagerContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AccountManagerDB")));
-
             services.AddIdentity<User, IdentityRole<int>>()  
             .AddEntityFrameworkStores<AccountManagerContext>()
             .AddDefaultTokenProviders();
             services.AddScoped<IProjectRepository, ProjectRepository>();
 
-            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IProjectService, ProjectService>(x=> new ProjectService(x.GetRequiredService<IProjectRepository>(), x.GetRequiredService <IEmployeeRepository>()));
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+
+            services.AddAuthentication("BasicAuthentication")
+            .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
             
-           
-            services.AddAuthentication("Basic")
-               .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("BasicAuthentication", new AuthorizationPolicyBuilder("BasicAuthentication").RequireAuthenticatedUser().Build());
+            });
+
             services.AddControllers()
                 .AddFluentValidation(fvc =>
                 {
                     fvc.RegisterValidatorsFromAssemblyContaining<Startup>();
                 });
-             
-            
-            
-            // Adding Authentication  
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAppAccountManager", Version = "v1" });
+                c.CustomSchemaIds(i => i.FullName);
+                c.DocInclusionPredicate((docName, description) => true);
+                //var xmlFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+                //c.IncludeXmlComments(xmlFilePath);
                 c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -77,6 +84,7 @@ namespace WebAppAccountManager
                     In = ParameterLocation.Header,
                     Description = "Basic Authorization header using the Bearer scheme."
                 });
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -92,26 +100,20 @@ namespace WebAppAccountManager
                     }
                 });
             });
-
-            
-                     
-
             services.AddAutoMapper(typeof(ProjectProfile));
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            ApplicationDbInitializer.SeedUsers(userManager,roleManager);
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAppAccountManager v1"));
             }
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();

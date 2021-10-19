@@ -12,20 +12,28 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 
-namespace AccountManager.AuthenticationHandlers
+namespace WebAppAccountManager.AuthenticationHandlers
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IUserService _userService;
 
-        public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, 
+        public BasicAuthenticationHandler(
+            IUserService userService,
+            IOptionsMonitor<AuthenticationSchemeOptions> options, 
             ILoggerFactory logger, 
             UrlEncoder encoder, 
-            ISystemClock clock,
-            IUserService userService) 
+            ISystemClock clock) 
             : base(options, logger, encoder, clock)
         {
             _userService = userService;
+        }
+
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            Response.Headers["WWW-Authenticate"] = "Basic";
+            return base.HandleChallengeAsync(properties);
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

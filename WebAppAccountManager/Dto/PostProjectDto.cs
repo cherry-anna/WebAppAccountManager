@@ -1,4 +1,4 @@
-﻿namespace AccountManager.Dto
+﻿namespace WebAppAccountManager.Dto
 {
     public class PostProjectDto
     {
