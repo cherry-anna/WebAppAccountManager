@@ -12,10 +12,10 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<Employee> _userManager;
         //private readonly IUserRepository _userRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        public EmployeeService(UserManager<User> userManager, IEmployeeRepository employeeRepository)
+        public EmployeeService(UserManager<Employee> userManager, IEmployeeRepository employeeRepository)
         {
             _userManager = userManager;
             _employeeRepository = employeeRepository;
@@ -23,21 +23,21 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 
         public async Task<IEnumerable<Employee>> GetEmployeesAsync()
         {
-            return await _employeeRepository.GetAllAsync();
+            return await _employeeRepository.GetAllWithProjectsAsync();
         } 
         public async Task<Employee> CreateEmployeeAsync(string name, string password)
         {
-            var user = new User { UserName = name};
-            var result = await _userManager.CreateAsync(user, password);
+            Employee employee = new Employee { UserName = name};
+            var result = await _userManager.CreateAsync(employee, password);
             if (!result.Succeeded)
             {
-                throw new Exception();
+                throw new Exception(result.ToString());
             }
-            Employee employee = new Employee {User=user};
-            var insertedItem = await _employeeRepository.InsertAsync(employee);
+            
+            //var insertedItem = await _employeeRepository.InsertAsync(employee);
             await _employeeRepository.UnitOfWork.SaveChangesAsync();
 
-            return insertedItem;
+            return employee;
         }
         //public async Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName)
         //{

@@ -5,7 +5,7 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<User> AuthenticateUserAsync(string login, string password);
-        Task<User> RegisterUserAsync(string login, string password);
+        Task<Employee> AuthenticateUserAsync(string login, string password);
+        Task<Employee> RegisterUserAsync(string login, string password);
     }
 }

@@ -6,13 +6,13 @@ using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Implementation
 {
-    public class UserRepository : BaseRepository<User, int, AccountManagerContext>, IUserRepository
+    public class UserRepository : BaseRepository<Employee, int, AccountManagerContext>, IUserRepository
     {
         public UserRepository(AccountManagerContext context) : base(context)
         {
         }
 
-        public async Task<User> GetByNameAsync(string name)
+        public async Task<Employee> GetByNameAsync(string name)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.UserName == name);
         }

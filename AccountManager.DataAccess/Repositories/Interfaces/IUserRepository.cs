@@ -5,8 +5,8 @@ using AccountManager.Domain.Models;
 
 namespace AccountManager.DataAccess.Repositories.Interfaces
 {
-    public interface IUserRepository : IRepository<User, int>
+    public interface IUserRepository : IRepository<Employee, int>
     {
-        Task<User> GetByNameAsync(string name);
+        Task<Employee> GetByNameAsync(string name);
     }
 }

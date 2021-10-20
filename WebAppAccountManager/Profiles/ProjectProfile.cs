@@ -12,7 +12,10 @@ namespace WebAppAccountManager.Profiles
             CreateMap<Project, PostProjectDto>();
             CreateMap<Project, AddEmployeeToProjectDto>(); 
             CreateMap<Employee, GetEmployeeDto>();
+                //.ForMember(emp=>emp.User.UserName, opt => opt.MapFrom(src => src.Name))
             CreateMap<Employee, PostEmployeeDto>();
+           
+
         }
     }
 }

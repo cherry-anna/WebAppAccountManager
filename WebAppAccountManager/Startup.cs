@@ -45,7 +45,7 @@ namespace WebAppAccountManager
         {
 
             services.AddDbContext<AccountManagerContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AccountManagerDB")));
-            services.AddIdentity<User, IdentityRole<int>>()  
+            services.AddIdentity<Employee, IdentityRole<int>>()  
             .AddEntityFrameworkStores<AccountManagerContext>()
             .AddDefaultTokenProviders();
             services.AddScoped<IProjectRepository, ProjectRepository>();

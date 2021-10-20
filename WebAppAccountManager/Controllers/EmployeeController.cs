@@ -21,7 +21,7 @@ namespace WebAppAccountManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("GetEmployees")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<GetEmployeeDto>>> GetEmployeesAsync()
         {
@@ -32,7 +32,7 @@ namespace WebAppAccountManager.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("CreateEmployee")]
         [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<GetEmployeeDto>> CreateEmployeeAsync([FromBody] PostEmployeeDto itemDto)
@@ -44,7 +44,7 @@ namespace WebAppAccountManager.Controllers
         }
         
         
-        [HttpDelete]
+       [HttpDelete("DeleteEmployee")]
        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteEmployeeAsync(int employeeId)
         {

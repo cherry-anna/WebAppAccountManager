@@ -8,13 +8,13 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 {
     public class UserService : IUserService
     {
-        private readonly SignInManager<User> _signInManager;
+        private readonly SignInManager<Employee> _signInManager;
 
-        public UserService(SignInManager<User> signInManager)
+        public UserService(SignInManager<Employee> signInManager)
         {
             this._signInManager = signInManager;
         }
-        public async Task<User> AuthenticateUserAsync(string name, string password)
+        public async Task<Employee> AuthenticateUserAsync(string name, string password)
         {
 
             var result = await _signInManager.PasswordSignInAsync(name, password, true, false);
@@ -26,7 +26,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             
         }
 
-        public Task<User> RegisterUserAsync(string login, string password)
+        public Task<Employee> RegisterUserAsync(string login, string password)
         {
             throw new NotImplementedException();
         }

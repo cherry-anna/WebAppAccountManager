@@ -6,7 +6,7 @@ namespace WebAppAccountManager.Dto
     public class GetEmployeeDto
     {
         public int Id { get; set; }
-        public User userName { get; set; }
+        public string UserName { get; set; }
         public ICollection<Project> Projects { get; set; }
 
     }

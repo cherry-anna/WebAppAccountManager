@@ -6,7 +6,7 @@ using AccountManager.Domain.Interfaces;
 
 namespace AccountManager.DataAccess.Context
 {
-    public class AccountManagerContext : IdentityDbContext<User, IdentityRole<int>, int>, IUnitOfWork
+    public class AccountManagerContext : IdentityDbContext<Employee, IdentityRole<int>, int>, IUnitOfWork
     {
         //public DbSet<User> Users { get; set; }
         
@@ -16,7 +16,7 @@ namespace AccountManager.DataAccess.Context
 
         public AccountManagerContext(DbContextOptions<AccountManagerContext> options) : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -39,7 +39,7 @@ namespace AccountManager.DataAccess.Context
                     .HasMaxLength(100);
             });
 
-            modelBuilder.Entity<User>(u =>
+            modelBuilder.Entity<Employee>(u =>
             {
                 u.HasKey(x => x.Id);
             });
@@ -54,8 +54,8 @@ namespace AccountManager.DataAccess.Context
                 //r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
             });
 
-            var hasher = new PasswordHasher<User>();
-            modelBuilder.Entity<User>().HasData(new User
+            var hasher = new PasswordHasher<Employee>();
+            modelBuilder.Entity<Employee>().HasData(new Employee
             {
                 Id = 1,
                 UserName = "Admin",
