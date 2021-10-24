@@ -39,17 +39,44 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 
             return employee;
         }
-        //public async Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName)
+        {
+            Employee employee = _userManager.Users.FirstOrDefault(u=>u.Id == employeeId);
+            if (employee==null)
+            {
+                throw new Exception("User not found.");
+            }
+            var result = await _userManager.SetUserNameAsync(employee, newName);
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.ToString());
+            }
+            return employee;
+        }
 
-        //public async Task<Employee> ChangePasswordEmployeeAsync(int employeeId, string newPassword)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async Task ChangePasswordEmployeeAsync(int employeeId, string newPassword)
+        {
+            Employee employee = _userManager.Users.FirstOrDefault(u => u.Id == employeeId);
+            if (employee == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            //Generate Token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(employee);
+
+            //Set new Password
+            var result = await _userManager.ResetPasswordAsync(employee, token, newPassword);
 
        
+            if (!result.Succeeded)
+            {
+                throw new Exception(result.ToString());
+            }
+            
+        }
+
+
         public async Task DeleteEmployeeAsync(int employeeId)
         {
             Employee employee = await _employeeRepository.GetByIdAsync(employeeId);

@@ -22,7 +22,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
         public async Task<IEnumerable<Project>> GetProjectsAsync()
         {
             
-            return await _projectRepository.GetAllAsync();
+            return await _projectRepository.GetProjectsWithItemsAsync();
         }
 
 
@@ -42,8 +42,8 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 
         public async Task AddEmployeeToProjectAsync(int idProject, int idEmployee)
         {
-            Employee employee= await _employeeRepository.GetByIdAsync(idEmployee);
-            Project project = await _projectRepository.GetByIdAsync(idProject);
+            Employee employee= await _employeeRepository.GetTrackingByIdAsync(idEmployee);
+            Project project = await _projectRepository.GetTrackingByIdAsync(idProject);
 
 
             project.Employees.Add(employee);

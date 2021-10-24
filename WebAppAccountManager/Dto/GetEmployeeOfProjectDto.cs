@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 namespace WebAppAccountManager.Dto
 {
-    public class GetEmployeeDto
+    public class GetEmployeeOfProjectDto
     {
         public int Id { get; set; }
         public string UserName { get; set; }
-        public ICollection<GetProjectOfEmloyeeDto> Projects { get; set; }
-
+        
     }
 }

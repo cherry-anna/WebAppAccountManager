@@ -8,6 +8,7 @@ namespace AccountManager.DataAccess.Repositories.Interfaces
     public interface IEmployeeRepository: IRepository<Employee, int>
     {
         Task<IEnumerable<Employee>>  GetAllWithProjectsAsync();
+        Task<Employee> GetTrackingByIdAsync(int employeeId);
     }
 
     

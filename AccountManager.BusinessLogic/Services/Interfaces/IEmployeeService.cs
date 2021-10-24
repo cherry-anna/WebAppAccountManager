@@ -9,8 +9,8 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
         Task<IEnumerable<Employee>> GetEmployeesAsync();
         
         Task<Employee> CreateEmployeeAsync(string name, string password);
-        //Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName);
-        //Task<Employee> ChangePasswordEmployeeAsync(int employeeId, string newPassword);
+        Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName);
+        Task ChangePasswordEmployeeAsync(int employeeId, string newPassword);
         Task DeleteEmployeeAsync(int employeeId);
     }
 }

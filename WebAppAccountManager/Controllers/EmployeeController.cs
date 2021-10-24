@@ -42,9 +42,29 @@ namespace WebAppAccountManager.Controllers
 
             return Ok(result);
         }
-        
-        
-       [HttpDelete("DeleteEmployee")]
+
+        [HttpPut("ChangeNameEmployee")]
+        [Authorize(Roles = "Admin")]
+
+        public async Task<ActionResult<GetEmployeeDto>> ChangeNameEmployeeAsync([FromBody] ChangeNameEmployeeDto itemDto)
+        {
+            var item = await _employeeService.ChangeNameEmployeeAsync(itemDto.employeeId, itemDto.newName);
+            var result = _mapper.Map<GetEmployeeDto>(item);
+
+            return Ok(result);
+        }
+
+        [HttpPut("ChangePasswordEmployee")]
+        [Authorize(Roles = "Admin")]
+
+        public async Task<ActionResult<GetEmployeeDto>> ChangePasswordEmployeeAsync([FromBody] ChangePasswordEmployeeDto itemDto)
+        {
+            await _employeeService.ChangePasswordEmployeeAsync(itemDto.employeeId, itemDto.newPassword);
+            
+            return Ok();
+        }
+
+        [HttpDelete("DeleteEmployee")]
        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteEmployeeAsync(int employeeId)
         {
