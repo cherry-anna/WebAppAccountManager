@@ -8,39 +8,53 @@ namespace AccountManager.Domain.Models
     public class Report : IEntity<int>
     {
         public int Id { get; set; }
-        private DateTime _startJobTime;
-        private DateTime _endJobTime;
-
-        public DateTime StartJobTime {
+        public DateTime JobDate { get; set; }
+        
+        private int _startJobTime;
+        public int StartJobTime {
             get { return _startJobTime; }
             set
             {
                 _startJobTime = value;
-                Duration = EndJobTime.Subtract(_startJobTime);
+                EndJobTime = _startJobTime + Duration;
             }
-            }
-        public DateTime EndJobTime {
-            get { return _endJobTime; }
-            set
-            {
-                _endJobTime = value;
-                Duration = _endJobTime.Subtract(StartJobTime);
-            }
-            }
+        }
+        public int EndJobTime { get; private set; }
         public string Description { get; set; }
         public Employee Employee { get; set; }
+        public int EmployeeId { get; set; }
         public Project Project { get; set; }
-        public TimeSpan Duration { get; private set; }
+        public int ProjectId { get; set; }
+
+        private int _duration;
+        public int Duration { 
+            get { return _duration; } 
+            set
+            {
+                _duration = value;
+                EndJobTime = _startJobTime + _duration;
+            }
+        }
 
         public Report() { }
-        public Report(DateTime startJobTime, DateTime endJobTime, string description, Employee employee, Project project)
+        public Report(Employee employee, Project project, DateTime jobDate, int duration, string description)
         {
-            StartJobTime = startJobTime;
-            EndJobTime = endJobTime;
-            Description = description;
             Employee = employee;
             Project = project;
-            Duration = endJobTime.Subtract(startJobTime);
+            JobDate = jobDate;
+            Duration = duration;
+            Description = description;
         }
+
+        public Report(Employee employee, Project project, DateTime jobDate, int startJobTime, int duration, string description)
+        {
+            Employee = employee;
+            Project = project;
+            JobDate = jobDate;
+            StartJobTime = startJobTime;
+            Duration = duration;
+            Description = description;
+        }
+
     }
 }

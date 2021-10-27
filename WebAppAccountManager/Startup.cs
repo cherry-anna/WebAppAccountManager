@@ -28,6 +28,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using WebAppAccountManager.AuthenticationHandlers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Any;
+using WebAppAccountManager.Converter;
 
 namespace WebAppAccountManager
 {
@@ -49,11 +51,14 @@ namespace WebAppAccountManager
             .AddEntityFrameworkStores<AccountManagerContext>()
             .AddDefaultTokenProviders();
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            
 
             services.AddScoped<IProjectService, ProjectService>(x=> new ProjectService(x.GetRequiredService<IProjectRepository>(), x.GetRequiredService <IEmployeeRepository>()));
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IReportRepository, ReportRepository>();
 
             services.AddAuthentication("BasicAuthentication")
             .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -67,7 +72,24 @@ namespace WebAppAccountManager
                 .AddFluentValidation(fvc =>
                 {
                     fvc.RegisterValidatorsFromAssemblyContaining<Startup>();
-                });
+                })
+
+               .AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new CustomConverterTimeSpan()));
+
+
+            //.AddNewtonsoftJson(options =>
+            //{
+            //    var dateConverter = new Newtonsoft.Json.Converters.IsoDateTimeConverter
+            //    {
+            //        DateTimeFormat = "dd'-'MM'-'yyyy'T'HH':'mm"
+            //    };
+
+            //    options.SerializerSettings.Converters.Add(dateConverter);
+            //    options.SerializerSettings.Culture = new CultureInfo("en-IE");
+            //    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+            //}); 
+            //// .AddNewtonsoftJson();
 
             services.AddSwaggerGen(c =>
             {
@@ -99,7 +121,25 @@ namespace WebAppAccountManager
                             new string[] {}
                     }
                 });
+
+                //c.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "time-span" });
+
+                c.MapType<TimeSpan>(() => new OpenApiSchema
+                {
+                    Type = "string",
+                    Example = new OpenApiString("00:00:00")
+                });
+
+                //c.MapType<DateTime>(() => new OpenApiSchema { Type = "string", Format = "date" });
+
+                //c.MapType<DateTime>(() => new OpenApiSchema
+                //{
+                //    Type = "string",
+                //    Example = new OpenApiString("dd-MM-yyyy")
+                //});
             });
+
+            //services.AddSwaggerGenNewtonsoftSupport();
             services.AddAutoMapper(typeof(ProjectProfile));
 
         }

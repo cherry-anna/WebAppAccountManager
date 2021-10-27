@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AccountManager.Domain.Models;
 using WebAppAccountManager.Dto;
+using System;
 
 namespace WebAppAccountManager.Profiles
 {
@@ -17,6 +18,11 @@ namespace WebAppAccountManager.Profiles
             CreateMap<Employee, PostEmployeeDto>();
             CreateMap<Employee, GetEmployeeOfProjectDto>();
 
+            CreateMap<Report, GetReportDto>()
+                .ForMember(r => r.Duration, opt => opt.MapFrom(r => new TimeSpan((int)(r.Duration / 60), r.Duration % 60, 0)))
+                .ForMember(r=>r.JobDate, opt => opt.MapFrom(r => r.JobDate.ToString("dd-MM-yyyy")));
+            CreateMap<Report, PostReportDto>()
+                .ForMember(r => r.JobDate, opt => opt.MapFrom(r => r.JobDate.ToString("dd-MM-yyyy")));
         }
     }
 }

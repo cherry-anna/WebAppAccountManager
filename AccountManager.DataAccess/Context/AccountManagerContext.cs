@@ -32,8 +32,8 @@ namespace AccountManager.DataAccess.Context
             modelBuilder.Entity<Report>(r =>
             {
                 r.HasKey(x => x.Id);
-                r.HasOne(x => x.Employee);
-                    //.WithMany(u => u.ToDoItems)
+                //r.HasOne(x => x.Employee)
+                  //  .WithMany(u => u.)
                     //.HasForeignKey(x => x.UserId);
                 r.Property(x => x.Description)
                     .HasMaxLength(100);
