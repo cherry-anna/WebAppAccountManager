@@ -45,7 +45,7 @@ namespace WebAppAccountManager.Controllers
 
         [HttpPut]
         [Route("api/users/{userId}/name")]
-        [Authorize(Roles = "Admin, Manager")]
+        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult> ChangeUserNameAsync(int userId,[FromBody] ChangeUserNameDto itemDto)
         {

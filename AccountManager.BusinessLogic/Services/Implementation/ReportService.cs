@@ -57,7 +57,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             // count all registered durations in minutes per day
             int registeredMinutes = await _context.Reports.Where(r => r.EmployeeId == employee.Id && r.JobDate == jobDate).SumAsync(r => r.Duration);
 
-            if ((registeredMinutes + duration.TotalMinutes) <= maxMinutesPerDay)
+            if ((registeredMinutes + duration.TotalMinutes) > maxMinutesPerDay)
             {
                 throw new Exception();
             }
@@ -100,7 +100,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             // count all registered durations in minutes per day
             int registeredMinutes = await _context.Reports.Where(r => r.EmployeeId == employee.Id && r.JobDate == jobDate).SumAsync(r => r.Duration);
 
-            if ((registeredMinutes + duration.TotalMinutes) <= maxMinutesPerDay)
+            if ((registeredMinutes + duration.TotalMinutes) > maxMinutesPerDay)
             {
                 throw new Exception();
             }
