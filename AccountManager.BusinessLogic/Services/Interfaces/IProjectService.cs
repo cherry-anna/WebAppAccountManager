@@ -9,6 +9,6 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
         Task<IEnumerable<Project>> GetProjectsAsync();
         
         Task<Project> CreateProjectAsync(string name, string description);
-        Task AddEmployeeToProjectAsync(int idProject, int idEmployee);
+        Task AddUserToProjectAsync(int projectId, int userId, decimal rate, string position);
     }
 }

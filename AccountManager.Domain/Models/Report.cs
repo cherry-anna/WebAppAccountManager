@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AccountManager.Domain.Interfaces;
 
 namespace AccountManager.Domain.Models
 {
-    public class Report : IEntity<int>
+    public class Report 
     {
         public int Id { get; set; }
         public DateTime JobDate { get; set; }
         
-        private int _startJobTime;
-        public int StartJobTime {
+        private int? _startJobTime;
+        public int? StartJobTime {
             get { return _startJobTime; }
             set
             {
@@ -19,7 +16,7 @@ namespace AccountManager.Domain.Models
                 EndJobTime = _startJobTime + Duration;
             }
         }
-        public int EndJobTime { get; private set; }
+        public int? EndJobTime { get; private set; }
         public string Description { get; set; }
         public Employee Employee { get; set; }
         public int EmployeeId { get; set; }
@@ -46,14 +43,10 @@ namespace AccountManager.Domain.Models
             Description = description;
         }
 
-        public Report(Employee employee, Project project, DateTime jobDate, int startJobTime, int duration, string description)
+        public Report(Employee employee, Project project, DateTime jobDate,
+            int startJobTime, int duration, string description):this(employee,project,jobDate,duration,description)
         {
-            Employee = employee;
-            Project = project;
-            JobDate = jobDate;
             StartJobTime = startJobTime;
-            Duration = duration;
-            Description = description;
         }
 
     }

@@ -1,6 +1,6 @@
 ﻿namespace WebAppAccountManager.Dto
 {
-    public class PostEmployeeDto
+    public class PostUserDto
     {
         public string Name { get; set; }
         public string Password { get; set; }

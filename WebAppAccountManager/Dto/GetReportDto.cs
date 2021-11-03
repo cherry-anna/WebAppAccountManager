@@ -12,9 +12,9 @@ namespace WebAppAccountManager.Dto
         public string EmployeeUserName { get; set; }
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }
+        public TimeSpan StartJobTime { get; set; }
         public TimeSpan Duration { get; set; }
         public string Description { get; set; }
-        //public ICollection<GetEmployeeOfProjectDto> Employees { get; set; }
-
+      
     }
 }

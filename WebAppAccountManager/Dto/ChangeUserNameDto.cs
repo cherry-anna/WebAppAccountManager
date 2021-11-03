@@ -1,8 +1,7 @@
 ﻿namespace WebAppAccountManager.Dto
 {
-    public class ChangeNameEmployeeDto
+    public class ChangeUserNameDto
     {
-        public int employeeId { get; set; }
         public string newName { get; set; }
 
     }

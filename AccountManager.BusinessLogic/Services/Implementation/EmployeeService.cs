@@ -1,88 +1,100 @@
 ﻿using AccountManager.BusinessLogic.Services.Interfaces;
-using AccountManager.DataAccess.Repositories.Interfaces;
+using AccountManager.DataAccess.Context;
 using AccountManager.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace AccountManager.BusinessLogic.Services.Implementation
-{
-    public class EmployeeService : IEmployeeService
-    {
-        private readonly UserManager<Employee> _userManager;
-        //private readonly IUserRepository _userRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        public EmployeeService(UserManager<Employee> userManager, IEmployeeRepository employeeRepository)
-        {
-            _userManager = userManager;
-            _employeeRepository = employeeRepository;
-        }
+//namespace AccountManager.BusinessLogic.Services.Implementation
+//{
+    //public class EmployeeService : IEmployeeService
+    //{
+    //    private readonly AccountManagerContext _context;
 
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
-        {
-            return await _employeeRepository.GetAllWithProjectsAsync();
-        } 
-        public async Task<Employee> CreateEmployeeAsync(string name, string password)
-        {
-            Employee employee = new Employee { UserName = name};
-            var result = await _userManager.CreateAsync(employee, password);
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.ToString());
-            }
+    //    private readonly IHttpContextAccessor _httpContextAccessor;
+    //    public EmployeeService(AccountManagerContext context, IHttpContextAccessor httpContextAccessor)
+    //    {
+    //        _context=context;
+    //        _httpContextAccessor = httpContextAccessor;
+    //    }
+
+        //public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        //{
+        //    return await _context.Employees.Include(e => e.Project).Include(e => e.User).AsNoTracking().ToListAsync<Employee>();
+        //} 
+        //public async Task<User> CreateUserAsync(string name, string password)
+        //{
+        //    var hasher = new PasswordHasher<User>();
+        //    User user = new User
+        //    {
+        //        UserName = name,
+        //        NormalizedUserName = name.ToUpper(),
+        //        PasswordHash = hasher.HashPassword(null, password),
+        //        SecurityStamp = string.Empty
+        //    };
+
+        //    var insertedItem = await _context.Users.AddAsync(user);
+        //    await _context.SaveChangesAsync();
             
-            //var insertedItem = await _employeeRepository.InsertAsync(employee);
-            await _employeeRepository.UnitOfWork.SaveChangesAsync();
+        //    return insertedItem.Entity;
+        //}
+        //public async Task ChangeNameEmployeeAsync(int employeeId, string newName)
+        //{
+        //    User employee = _context.Employees.FirstOrDefault(e=>e.Id == employeeId);
+        //    if (employee==null)
+        //    {
+        //        throw new Exception("User not found.");
+        //    }
+        //    employee.UserName = newName;
+        //    await _context.SaveChangesAsync();
+        //}
 
-            return employee;
-        }
-        public async Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName)
-        {
-            Employee employee = _userManager.Users.FirstOrDefault(u=>u.Id == employeeId);
-            if (employee==null)
-            {
-                throw new Exception("User not found.");
-            }
-            var result = await _userManager.SetUserNameAsync(employee, newName);
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.ToString());
-            }
-            return employee;
-        }
+        //public async Task ChangePasswordEmployeeAsync(string oldPassword, string newPassword)
+        //{
+        //    HttpContext context = _httpContextAccessor.HttpContext;
+        //    int employeeId = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-        public async Task ChangePasswordEmployeeAsync(int employeeId, string newPassword)
-        {
-            Employee employee = _userManager.Users.FirstOrDefault(u => u.Id == employeeId);
-            if (employee == null)
-            {
-                throw new Exception("User not found.");
-            }
+        //    User employee = _context.Employees.FirstOrDefault(u => u.Id == employeeId);
+        //    if (employee == null)
+        //    {
+        //        throw new Exception("User not found.");
+        //    }
 
-            //Generate Token
-            var token = await _userManager.GeneratePasswordResetTokenAsync(employee);
+        //    var hasher = new PasswordHasher<User>();
 
-            //Set new Password
-            var result = await _userManager.ResetPasswordAsync(employee, token, newPassword);
+        //    string passwordHash = hasher.HashPassword(null, oldPassword);
+        //    if (passwordHash != oldPassword)
+        //    {
+        //        throw new Exception("Password invalid.");
+        //    }
+        //    employee.PasswordHash= hasher.HashPassword(null, newPassword);
+        //    await _context.SaveChangesAsync();
+        //}
 
-       
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.ToString());
-            }
-            
-        }
+        //public async Task SetPasswordEmployeeAsync(int employeeId, string newPassword)
+        //{
+        //    User employee = _context.Employees.FirstOrDefault(u => u.Id == employeeId);
+        //    if (employee == null)
+        //    {
+        //        throw new Exception("User not found.");
+        //    }
 
+        //    var hasher = new PasswordHasher<User>();
+        //    employee.PasswordHash = hasher.HashPassword(null, newPassword);
+        //    await _context.SaveChangesAsync();
+        //}
 
-        public async Task DeleteEmployeeAsync(int employeeId)
-        {
-            Employee employee = await _employeeRepository.GetByIdAsync(employeeId);
-            await _employeeRepository.DeleteAsync(employee);
-            await _employeeRepository.UnitOfWork.SaveChangesAsync();
-        }
+        //public async Task DeleteEmployeeAsync(int employeeId)
+        //{
+        //    User employee = _context.Employees.FirstOrDefault(u => u.Id == employeeId);
+        //    _context.Employees.Remove(employee);
+            //await _context.SaveChangesAsync();
+//        }
 
-    }
-}
+//    }
+//}

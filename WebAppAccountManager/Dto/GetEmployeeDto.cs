@@ -5,9 +5,9 @@ namespace WebAppAccountManager.Dto
 {
     public class GetEmployeeDto
     {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public ICollection<GetProjectOfEmloyeeDto> Projects { get; set; }
+        public string ProjectName { get; set; }
+        public decimal Rate { get; set; }
+        public string Position { get; set; }
 
     }
 }

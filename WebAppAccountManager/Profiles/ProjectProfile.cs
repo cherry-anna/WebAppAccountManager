@@ -11,12 +11,12 @@ namespace WebAppAccountManager.Profiles
         {
             CreateMap<Project, GetProjectDto>();
             CreateMap<Project, PostProjectDto>();
-            CreateMap<Project, AddEmployeeToProjectDto>();
+            CreateMap<Project, AddUserToProjectDto>();
             CreateMap<Project, GetProjectOfEmloyeeDto>();
-            CreateMap<Employee, GetEmployeeDto>();
-                //.ForMember(emp=>emp.User.UserName, opt => opt.MapFrom(src => src.Name))
-            CreateMap<Employee, PostEmployeeDto>();
-            CreateMap<Employee, GetEmployeeOfProjectDto>();
+            CreateMap<User, GetUserDto>();
+            CreateMap<User, PostUserDto>();
+            CreateMap<Employee, GetEmployeeOfProjectDto>().
+                ForMember(emp => emp.UserName, opt => opt.MapFrom(src => src.User.UserName));
 
             CreateMap<Report, GetReportDto>()
                 .ForMember(r => r.Duration, opt => opt.MapFrom(r => new TimeSpan((int)(r.Duration / 60), r.Duration % 60, 0)))

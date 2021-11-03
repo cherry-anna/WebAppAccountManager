@@ -4,13 +4,14 @@ using AccountManager.Domain.Models;
 
 namespace AccountManager.BusinessLogic.Services.Interfaces
 {
-    public interface IEmployeeService
-    {
-        Task<IEnumerable<Employee>> GetEmployeesAsync();
+    //public interface IEmployeeService
+    //{
+    //    Task<IEnumerable<User>> GetEmployeesAsync();
         
-        Task<Employee> CreateEmployeeAsync(string name, string password);
-        Task<Employee> ChangeNameEmployeeAsync(int employeeId, string newName);
-        Task ChangePasswordEmployeeAsync(int employeeId, string newPassword);
-        Task DeleteEmployeeAsync(int employeeId);
-    }
+    //    Task<User> CreateUserAsync(string name, string password);
+    //    Task ChangeNameEmployeeAsync(int employeeId, string newName);
+    //    Task ChangePasswordEmployeeAsync(string oldPassword, string newPassword);
+    //    Task SetPasswordEmployeeAsync(int employeeId, string newPassword);
+    //    Task DeleteEmployeeAsync(int employeeId);
+    //}
 }

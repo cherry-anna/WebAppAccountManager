@@ -3,28 +3,17 @@ using FluentValidation.AspNetCore;
 using AccountManager.BusinessLogic.Services.Implementation;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Context;
-using AccountManager.DataAccess.Repositories.Implementation;
-using AccountManager.DataAccess.Repositories.Interfaces;
 using AccountManager.Domain.Models;
 using WebAppAccountManager.Profiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using WebAppAccountManager.AuthenticationHandlers;
 using Microsoft.AspNetCore.Authorization;
@@ -47,18 +36,13 @@ namespace WebAppAccountManager
         {
 
             services.AddDbContext<AccountManagerContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AccountManagerDB")));
-            services.AddIdentity<Employee, IdentityRole<int>>()  
+            services.AddIdentity<User, IdentityRole<int>>()  
             .AddEntityFrameworkStores<AccountManagerContext>()
             .AddDefaultTokenProviders();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
-            
 
-            services.AddScoped<IProjectService, ProjectService>(x=> new ProjectService(x.GetRequiredService<IProjectRepository>(), x.GetRequiredService <IEmployeeRepository>()));
+            services.AddScoped<IProjectService, ProjectService>(x=> new ProjectService(x.GetRequiredService<AccountManagerContext>()));
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IReportService, ReportService>();
-            services.AddScoped<IReportRepository, ReportRepository>();
 
             services.AddAuthentication("BasicAuthentication")
             .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -77,27 +61,11 @@ namespace WebAppAccountManager
                .AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new CustomConverterTimeSpan()));
 
-
-            //.AddNewtonsoftJson(options =>
-            //{
-            //    var dateConverter = new Newtonsoft.Json.Converters.IsoDateTimeConverter
-            //    {
-            //        DateTimeFormat = "dd'-'MM'-'yyyy'T'HH':'mm"
-            //    };
-
-            //    options.SerializerSettings.Converters.Add(dateConverter);
-            //    options.SerializerSettings.Culture = new CultureInfo("en-IE");
-            //    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-            //}); 
-            //// .AddNewtonsoftJson();
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAppAccountManager", Version = "v1" });
                 c.CustomSchemaIds(i => i.FullName);
                 c.DocInclusionPredicate((docName, description) => true);
-                //var xmlFilePath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-                //c.IncludeXmlComments(xmlFilePath);
                 c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -139,7 +107,6 @@ namespace WebAppAccountManager
                 //});
             });
 
-            //services.AddSwaggerGenNewtonsoftSupport();
             services.AddAutoMapper(typeof(ProjectProfile));
 
         }

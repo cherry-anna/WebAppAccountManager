@@ -2,14 +2,12 @@
 using AccountManager.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using AccountManager.Domain.Interfaces;
 
 namespace AccountManager.DataAccess.Context
 {
-    public class AccountManagerContext : IdentityDbContext<Employee, IdentityRole<int>, int>, IUnitOfWork
+    public class AccountManagerContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
-        //public DbSet<User> Users { get; set; }
-        
+        public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Project> Projects { get; set; }
@@ -26,8 +24,7 @@ namespace AccountManager.DataAccess.Context
 
             modelBuilder.Entity<Project>()
              .HasMany(e => e.Employees)
-             .WithMany(p => p.Projects)
-             .UsingEntity(j => j.ToTable("ProjectsEmployees"));
+             .WithOne(p => p.Project);
 
             modelBuilder.Entity<Report>(r =>
             {
@@ -39,7 +36,7 @@ namespace AccountManager.DataAccess.Context
                     .HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Employee>(u =>
+            modelBuilder.Entity<User>(u =>
             {
                 u.HasKey(x => x.Id);
             });
@@ -54,8 +51,8 @@ namespace AccountManager.DataAccess.Context
                 //r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
             });
 
-            var hasher = new PasswordHasher<Employee>();
-            modelBuilder.Entity<Employee>().HasData(new Employee
+            var hasher = new PasswordHasher<User>();
+            modelBuilder.Entity<User>().HasData(new User
             {
                 Id = 1,
                 UserName = "Admin",

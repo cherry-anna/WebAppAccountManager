@@ -1,8 +1,8 @@
 ﻿namespace WebAppAccountManager.Dto
 {
-    public class ChangePasswordEmployeeDto
+    public class ChangeUserPasswordDto
     {
-        public int employeeId { get; set; }
+        public string oldPassword { get; set; }
         public string newPassword { get; set; }
 
     }

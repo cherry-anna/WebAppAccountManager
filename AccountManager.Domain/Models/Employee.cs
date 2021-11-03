@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AccountManager.Domain.Interfaces;
-using Microsoft.AspNetCore.Identity;
-
+﻿
 namespace AccountManager.Domain.Models
 {
-    public class Employee : IdentityUser<int>, IEntity<int>
+    public class Employee 
     {
-       // public int Id { get; set; }
-       // public User User { get; set; }
-
-        public ICollection<Project> Projects { get; set; } 
-
-        public Employee()
-        {
-            Projects = new List<Project>();
-        }
-    }
+        public int Id { get; set; }
+        public User User { get; set; }
+        public int UserId { get; set; }
+        public Project Project { get; set; }
+        public int ProjectId { get; set; }
+        public decimal Rate { get; set; }
+        public string Position{ get; set; }
+}
 }

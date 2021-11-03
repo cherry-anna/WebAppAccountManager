@@ -2,30 +2,23 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
-using AccountManager.DataAccess.Repositories.Interfaces;
+using AccountManager.DataAccess.Context;
 using AccountManager.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccountManager.BusinessLogic.Services.Implementation
 {
     public class ProjectService : IProjectService
     {
-        private readonly IProjectRepository _projectRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        public ProjectService(IProjectRepository projectRepository, IEmployeeRepository employeeRepository)
+        private readonly AccountManagerContext _context;
+        public ProjectService(AccountManagerContext context)
         {
-            _projectRepository = projectRepository;
-            _employeeRepository = employeeRepository;
+             _context=context;
         }
-
-  
-
         public async Task<IEnumerable<Project>> GetProjectsAsync()
         {
-            
-            return await _projectRepository.GetProjectsWithItemsAsync();
+            return await _context.Projects.Include(p => p.Employees).ThenInclude(e=>e.User).AsNoTracking().ToListAsync<Project>();
         }
-
-
         public async Task<Project> CreateProjectAsync(string name, string description)
         {
             var item = new Project
@@ -34,25 +27,36 @@ namespace AccountManager.BusinessLogic.Services.Implementation
                 Description = description
             };
 
-            var insertedItem = await _projectRepository.InsertAsync(item);
-            await _projectRepository.UnitOfWork.SaveChangesAsync();
+            var insertedItem = await _context.Projects.AddAsync(item);
+            await _context.SaveChangesAsync();
 
-            return insertedItem;
+            return insertedItem.Entity; 
         }
 
-        public async Task AddEmployeeToProjectAsync(int idProject, int idEmployee)
+        public async Task AddUserToProjectAsync(int projectId, int userId, decimal rate, string position)
         {
-            Employee employee= await _employeeRepository.GetTrackingByIdAsync(idEmployee);
-            Project project = await _projectRepository.GetTrackingByIdAsync(idProject);
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user==null)
+            {
+                throw new Exception();
+            }
+            Project project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+            if (project == null)
+            {
+                throw new Exception();
+            }
 
-
+            Employee employee = new Employee
+            {
+                UserId = userId,
+                ProjectId = projectId,
+                Rate = rate,
+                Position = position
+            };
             project.Employees.Add(employee);
+            _context.Projects.Update(project);
 
-
-            await _projectRepository.UpdateAsync(project);
-            await _projectRepository.UnitOfWork.SaveChangesAsync();
-
-            
+            await _context.SaveChangesAsync();
         }
     }
 }

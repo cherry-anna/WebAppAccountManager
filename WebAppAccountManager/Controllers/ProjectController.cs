@@ -15,7 +15,6 @@ using System;
 
 namespace WebAppAccountManager.Controllers
 {
-    [Route("api/projects")]
     [ApiController]
     public class ProjectController : ControllerBase
     {
@@ -28,8 +27,9 @@ namespace WebAppAccountManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("GetProject")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("api/projects")]
+        [Authorize(Roles = "Admin, Manager, Employee")]
         public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetProjectsAsync()
         {
             var items = await _projectService.GetProjectsAsync();
@@ -39,10 +39,9 @@ namespace WebAppAccountManager.Controllers
             return Ok(result);
         }
 
-        [HttpPost("CreateProject")]
-        //[Authorize(Policy = "BasicAuthentication")]
-        //[Authorize(AuthenticationSchemes = "BasicAuthentication")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/projects")]
+        [Authorize(Roles = "Admin, Manager")]
 
         public async Task<ActionResult<GetProjectDto>> CreateProjectAsync([FromBody] PostProjectDto itemDto)
         {
@@ -52,16 +51,14 @@ namespace WebAppAccountManager.Controllers
             return Ok(result);
         }
 
-        [HttpPut("AddEmployeeToProject")]
-        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        [Route("api/projects/{projectId}/users/{userId}")]
+        [Authorize(Roles = "Admin, Manager")]
 
-        public async Task<ActionResult> AddEmployeeToProjectAsync([FromBody] AddEmployeeToProjectDto itemDto)
+        public async Task<ActionResult> AddUserToProjectAsync(int projectId, int userId, [FromBody] AddUserToProjectDto itemDto)
         {
-            await _projectService.AddEmployeeToProjectAsync(itemDto.IdProject, itemDto.IdEmployee);
-            
+            await _projectService.AddUserToProjectAsync(projectId, userId, itemDto.Rate, itemDto.Position);
             return Ok();
         }
-
-        private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
     }
 }

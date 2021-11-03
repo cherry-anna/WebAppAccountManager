@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AccountManager.Domain.Interfaces;
+﻿using System.Collections.Generic;
 
 namespace AccountManager.Domain.Models
 {
-    public class Project : IEntity<int>
+    public class Project 
     {
         public int Id { get; set; }
         public string Name { get; set; }

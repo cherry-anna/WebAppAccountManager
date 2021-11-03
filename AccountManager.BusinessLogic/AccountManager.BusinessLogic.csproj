@@ -8,9 +8,6 @@
 		<ProjectReference Include="..\AccountManager.Domain\AccountManager.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Specifications\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
 	</ItemGroup>
 </Project>
