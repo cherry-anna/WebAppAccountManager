@@ -53,8 +53,8 @@ namespace AccountManager.BusinessLogic.Services.Implementation
                 Rate = rate,
                 Position = position
             };
-            project.Employees.Add(employee);
-            _context.Projects.Update(project);
+
+            _context.Add(employee);
 
             await _context.SaveChangesAsync();
         }

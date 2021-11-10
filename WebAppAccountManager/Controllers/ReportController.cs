@@ -3,9 +3,8 @@ using AccountManager.Domain.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebAppAccountManager.Dto;
 
@@ -31,7 +30,8 @@ namespace WebAppAccountManager.Controllers
             IEnumerable<Report> items;
             if (User.IsInRole("Employee"))
             {
-                items = await _reportService.GetCurrentUserReportsAsync();
+                int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                items = await _reportService.GetReportsByUserIdAsync(currentUserId);
             }
             else
             {
@@ -39,7 +39,6 @@ namespace WebAppAccountManager.Controllers
             }
                 
             var result = _mapper.Map<IEnumerable<GetReportDto>>(items);
-            //HttpContext.User
             return Ok(result);
         }
 
@@ -49,7 +48,8 @@ namespace WebAppAccountManager.Controllers
 
         public async Task<ActionResult<GetReportDto>> CreateReportAsync([FromBody] PostReportDto itemDto)
         {
-            var item = await _reportService.CreateReportAsync(itemDto.ProjectId, itemDto.JobDate, itemDto.Duration, itemDto.Description);
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var item = await _reportService.CreateReportAsync(itemDto.ProjectId, itemDto.EmployeeId, currentUserId, itemDto.JobDate, itemDto.Duration, itemDto.Description);
             var result = _mapper.Map<GetReportDto>(item);
 
             return Ok(result);
@@ -62,11 +62,15 @@ namespace WebAppAccountManager.Controllers
 
         public async Task<ActionResult<GetReportDto>> CreateReportWithTimeAsync([FromBody] PostReportWithTimeDto itemDto)
         {
-            var item = await _reportService.CreateReportWithTimeAsync(itemDto.ProjectId, itemDto.JobDate, itemDto.StartJobTime, itemDto.Duration, itemDto.Description);
+           
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var item = await _reportService.CreateReportAsync(itemDto.ProjectId, itemDto.EmployeeId, currentUserId, itemDto.JobDate, itemDto.Duration, itemDto.Description, itemDto.StartJobTime);
             var result = _mapper.Map<GetReportDto>(item);
 
             return Ok(result);
         }
+
 
 
     }

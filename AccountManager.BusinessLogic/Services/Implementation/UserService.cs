@@ -16,12 +16,12 @@ namespace AccountManager.BusinessLogic.Services.Implementation
     {
         private readonly SignInManager<User> _signInManager;
         private readonly AccountManagerContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public UserService(SignInManager<User> signInManager, AccountManagerContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        public UserService(SignInManager<User> signInManager, AccountManagerContext context, RoleManager<IdentityRole<int>> roleManager)
         {
             this._signInManager = signInManager;
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _roleManager = roleManager;
         }
         public async Task<User> AuthenticateUserAsync(string name, string password)
         {
@@ -40,7 +40,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
         {
             return await _context.Users.Include(u => u.Employees).ThenInclude(e => e.Project).AsNoTracking().ToListAsync<User>();
         }
-        public async Task<User> CreateUserAsync(string name, string password)
+        public async Task<User> CreateUserAsync(string name, string password, int roleId)
         {
             var hasher = new PasswordHasher<User>();
             User user = new User
@@ -54,24 +54,45 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             var insertedItem = await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            var result = await _signInManager.UserManager.AddToRoleAsync(insertedItem.Entity, role.Name);
+            if (!result.Succeeded)
+            {
+                throw new Exception("The role is not assigned to the user.");
+            }
+
             return insertedItem.Entity;
         }
-        public async Task ChangeUserNameAsync(int userId, string newName)
+        public async Task UpdateUserAsync(int userId, string name, string password)
         {
             User user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
                 throw new Exception("User is not found.");
             }
-            user.UserName = newName;
+
+            // update only name or password, or both 
+                      
+            if (name != "" & user.UserName != name)
+            {
+                user.UserName = name;
+            }
+            
+            if (password != "")
+            {
+                var hasher = new PasswordHasher<User>();
+                string passwordHash = hasher.HashPassword(null, password);
+                if (user.PasswordHash != passwordHash) 
+                {
+                    user.PasswordHash = passwordHash;
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeUserPasswordAsync(string oldPassword, string newPassword)
+        public async Task ChangeUserPasswordAsync(int userId, string oldPassword, string newPassword)
         {
-            HttpContext context = _httpContextAccessor.HttpContext;
-            int userId = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
             User user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
@@ -79,25 +100,11 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             }
 
             var hasher = new PasswordHasher<User>();
-
             string passwordHash = hasher.HashPassword(null, oldPassword);
             if (passwordHash != user.PasswordHash)
             {
                 throw new Exception("Password is invalid.");
             }
-            user.PasswordHash = hasher.HashPassword(null, newPassword);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task SetUserPasswordAsync(int userId, string newPassword)
-        {
-            User user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null)
-            {
-                throw new Exception("User is not found.");
-            }
-
-            var hasher = new PasswordHasher<User>();
             user.PasswordHash = hasher.HashPassword(null, newPassword);
             await _context.SaveChangesAsync();
         }

@@ -8,10 +8,9 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
     {
         Task<User> AuthenticateUserAsync(string login, string password);
         Task<IEnumerable<User>> GetUsersAsync();
-        Task<User> CreateUserAsync(string name, string password);
-        Task ChangeUserNameAsync(int userId, string newName);
-        Task ChangeUserPasswordAsync(string oldPassword, string newPassword);
-        Task SetUserPasswordAsync(int userId, string newPassword);
+        Task<User> CreateUserAsync(string name, string password, int roleId);
+        Task UpdateUserAsync(int userId, string name, string password);
+        Task ChangeUserPasswordAsync(int userId, string oldPassword, string newPassword);
         Task DeleteUserAsync(int userId);
     }
 }

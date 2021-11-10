@@ -7,7 +7,7 @@ namespace AccountManager.DataAccess.Context
 {
     public class AccountManagerContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Project> Projects { get; set; }

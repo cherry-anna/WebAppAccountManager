@@ -1,7 +1,4 @@
-﻿using AccountManager.Domain.Models;
-using System.Collections.Generic;
-
-namespace WebAppAccountManager.Dto
+﻿namespace WebAppAccountManager.Dto
 {
     public class GetEmployeeDto
     {

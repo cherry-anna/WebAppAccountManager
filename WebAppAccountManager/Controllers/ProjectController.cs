@@ -6,9 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
-using AccountManager.Domain.Models;
 using WebAppAccountManager.Dto;
-using System;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

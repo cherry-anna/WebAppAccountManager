@@ -3,7 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebAppAccountManager.Dto;
 
@@ -37,39 +37,30 @@ namespace WebAppAccountManager.Controllers
 
         public async Task<ActionResult<GetUserDto>> CreateUserAsync([FromBody] PostUserDto itemDto)
         {
-            var item = await _userService.CreateUserAsync(itemDto.Name, itemDto.Password);
+            var item = await _userService.CreateUserAsync(itemDto.Name, itemDto.Password, itemDto.RoleId);
             var result = _mapper.Map<GetUserDto>(item);
 
             return Ok(result);
         }
 
         [HttpPut]
-        [Route("api/users/{userId}/name")]
+        [Route("api/users/{userId}")]
         [Authorize(Roles = "Admin")]
 
-        public async Task<ActionResult> ChangeUserNameAsync(int userId,[FromBody] ChangeUserNameDto itemDto)
+        public async Task<ActionResult> UpdateUserAsync(int userId,[FromBody] PostUserDto itemDto)
         {
-            await _userService.ChangeUserNameAsync(userId, itemDto.newName);
+            await _userService.UpdateUserAsync(userId, itemDto.Name, itemDto.Password);
             return Ok();
         }
 
         [HttpPut]
-        [Route("api/users/currentuserpassword")]
+        [Route("api/users/reset-password")]
         [Authorize(Roles = "Admin, Manager, Employee")]
 
         public async Task<ActionResult> ChangeUserPasswordAsync([FromBody] ChangeUserPasswordDto itemDto)
         {
-            await _userService.ChangeUserPasswordAsync(itemDto.oldPassword, itemDto.newPassword);
-            return Ok();
-        }
-
-        [HttpPut]
-        [Route("api/users/{userId}/password")]
-        [Authorize(Roles = "Admin")]
-
-        public async Task<ActionResult> SetUserPasswordAsync(int userId, [FromBody] SetUserPasswordDto itemDto)
-        {
-            await _userService.SetUserPasswordAsync(userId, itemDto.newPassword);
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            await _userService.ChangeUserPasswordAsync(currentUserId, itemDto.oldPassword, itemDto.newPassword);
             return Ok();
         }
 
