@@ -19,9 +19,7 @@ namespace AccountManager.Domain.Models
         public int? EndJobTime { get; private set; }
         public string Description { get; set; }
         public Employee Employee { get; set; }
-        //public int EmployeeId { get; set; }
         public Project Project { get; set; }
-        //public int ProjectId { get; set; }
 
         private int _duration;
         public int Duration { 
@@ -32,7 +30,7 @@ namespace AccountManager.Domain.Models
                 EndJobTime = _startJobTime + _duration;
             }
         }
-
+        public DateTime UpdateDate { get; set; }
         public Report() { }
         public Report(Employee employee, Project project, DateTime jobDate, int duration, string description)
         {
@@ -41,6 +39,7 @@ namespace AccountManager.Domain.Models
             JobDate = jobDate;
             Duration = duration;
             Description = description;
+            UpdateDate = DateTime.Now;
         }
 
         public Report(Employee employee, Project project, DateTime jobDate,

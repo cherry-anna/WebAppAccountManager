@@ -1,6 +1,7 @@
 ﻿using AccountManager.BusinessLogic.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -65,12 +66,13 @@ namespace WebAppAccountManager.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Route("api/users/{userId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUserAsync(int userId)
         {
             await _userService.DeleteUserAsync(userId);
-            return Ok();
+            return NoContent();
         }
     }
 }

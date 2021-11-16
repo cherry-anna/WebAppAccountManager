@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-
 using AccountManager.BusinessLogic.Services.Implementation;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Context;

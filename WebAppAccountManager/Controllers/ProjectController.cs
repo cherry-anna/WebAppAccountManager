@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using WebAppAccountManager.Dto;
@@ -33,7 +31,6 @@ namespace WebAppAccountManager.Controllers
             var items = await _projectService.GetProjectsAsync();
 
             var result = _mapper.Map<IEnumerable<GetProjectDto>>(items);
-            //HttpContext.User
             return Ok(result);
         }
 

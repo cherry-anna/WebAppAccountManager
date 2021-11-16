@@ -2,6 +2,7 @@
 using AccountManager.Domain.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -37,7 +38,7 @@ namespace WebAppAccountManager.Controllers
             {
                 items = await _reportService.GetReportsAsync();
             }
-                
+
             var result = _mapper.Map<IEnumerable<GetReportDto>>(items);
             return Ok(result);
         }
@@ -62,16 +63,51 @@ namespace WebAppAccountManager.Controllers
 
         public async Task<ActionResult<GetReportDto>> CreateReportWithTimeAsync([FromBody] PostReportWithTimeDto itemDto)
         {
-           
-            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var item = await _reportService.CreateReportAsync(itemDto.ProjectId, itemDto.EmployeeId, currentUserId, itemDto.JobDate, itemDto.Duration, itemDto.Description, itemDto.StartJobTime);
             var result = _mapper.Map<GetReportDto>(item);
 
             return Ok(result);
         }
 
+        [HttpPut]
+        [Route("api/reports/{reportId}")]
+        [Authorize(Roles = "Admin, Manager, Employee")]
 
+        public async Task<ActionResult<GetReportDto>> UpdateReportAsync(int reportId, [FromBody] PostReportDto itemDto)
+        {
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var item = await _reportService.UpdateReportAsync(reportId, itemDto.ProjectId, itemDto.EmployeeId, currentUserId, itemDto.JobDate, itemDto.Duration, itemDto.Description);
+            var result = _mapper.Map<GetReportDto>(item);
+
+            return Ok(result);
+        }
+
+        [HttpPut]
+        [Route("api/reports/withtime/{reportId}")]
+        [Authorize(Roles = "Admin, Manager, Employee")]
+
+        public async Task<ActionResult<GetReportDto>> UpdateReportWithTimeAsync(int reportId, [FromBody] PostReportWithTimeDto itemDto)
+        {
+
+            int currentUserId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var item = await _reportService.UpdateReportAsync(reportId, itemDto.ProjectId, itemDto.EmployeeId, currentUserId, itemDto.JobDate, itemDto.Duration, itemDto.Description, itemDto.StartJobTime);
+            var result = _mapper.Map<GetReportDto>(item);
+
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Route("api/reports/{reportId}")]
+        [Authorize(Roles = "Admin, Manager")]
+
+        public async Task<ActionResult<GetReportDto>> DeleteReportAsync(int reportId)
+        {
+            await _reportService.DeleteReportAsync(reportId);
+            return NoContent();
+        }
 
     }
 }

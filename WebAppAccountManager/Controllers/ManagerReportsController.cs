@@ -1,13 +1,10 @@
 ﻿using AccountManager.BusinessLogic.Models;
 using AccountManager.BusinessLogic.Services.Interfaces;
-using AccountManager.Domain.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using WebAppAccountManager.Dto;
 
 namespace WebAppAccountManager.Controllers
 {
@@ -42,6 +39,17 @@ namespace WebAppAccountManager.Controllers
             var result = _mapper.Map<IEnumerable<ManagerReportByProject>>(items);
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("api/managerreports/bymonth")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<ActionResult<IEnumerable<ManagerReportByMonth>>> GetManagerReportByMonthAsync(int month, int year)
+        {
+            var items = await _reportService.GetManagerReportByMonthAsync(month, year);
+            var result = _mapper.Map<IEnumerable<ManagerReportByMonth>>(items);
+            return Ok(result);
+        }
+
 
 
     }

@@ -7,7 +7,6 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
     public interface IProjectService
     {
         Task<IEnumerable<Project>> GetProjectsAsync();
-        
         Task<Project> CreateProjectAsync(string name, string description);
         Task AddUserToProjectAsync(int projectId, int userId, decimal rate, string position);
     }

@@ -13,5 +13,8 @@ namespace AccountManager.BusinessLogic.Services.Interfaces
         Task<Report> CreateReportAsync( int projectId, int employeeId, int userId, DateTime jobDate, TimeSpan duration, string description, TimeSpan? startJobTime=null);
         Task<IEnumerable<ManagerReportByUser>> GetManagerReportByUserAsync(int userId);
         Task<IEnumerable<ManagerReportByProject>> GetManagerReportByProjectAsync(int projectId);
+        Task<IEnumerable<ManagerReportByMonth>> GetManagerReportByMonthAsync(int month, int year);
+        Task<Report> UpdateReportAsync(int reportId, int projectId, int employeeId, int currentUserId, DateTime jobDate, TimeSpan duration, string description, TimeSpan? startJobTime = null);
+        Task DeleteReportAsync(int reportId);
     }
 }

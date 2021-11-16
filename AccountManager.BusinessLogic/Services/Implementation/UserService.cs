@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Context;
 using AccountManager.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -115,10 +113,6 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
-
-
-
-
 
     }
 }

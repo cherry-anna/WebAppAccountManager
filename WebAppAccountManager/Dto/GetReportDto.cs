@@ -1,6 +1,4 @@
-﻿using AccountManager.Domain.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace WebAppAccountManager.Dto
 {
