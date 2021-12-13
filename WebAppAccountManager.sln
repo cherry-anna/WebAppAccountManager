@@ -5,11 +5,15 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppAccountManager", "WebAppAccountManager\WebAppAccountManager.csproj", "{31AC9008-8627-45BA-980F-FC918BA08447}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountManager.Domain", "AccountManager.Domain\AccountManager.Domain.csproj", "{61BAB111-7B91-4F2E-98C6-D67B5A7A6305}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountManager.Domain", "AccountManager.Domain\AccountManager.Domain.csproj", "{61BAB111-7B91-4F2E-98C6-D67B5A7A6305}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountManager.DataAccess", "AccountManager.DataAccess\AccountManager.DataAccess.csproj", "{B48E41A4-D519-49BC-872E-84BD5B32307B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountManager.DataAccess", "AccountManager.DataAccess\AccountManager.DataAccess.csproj", "{B48E41A4-D519-49BC-872E-84BD5B32307B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountManager.BusinessLogic", "AccountManager.BusinessLogic\AccountManager.BusinessLogic.csproj", "{72A5CB68-8736-4810-B8BF-5D0E7870973F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountManager.BusinessLogic", "AccountManager.BusinessLogic\AccountManager.BusinessLogic.csproj", "{72A5CB68-8736-4810-B8BF-5D0E7870973F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2C81583A-52B1-49DD-8961-FF4239C7E9DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountManager.BusinessLogic.Tests", "AccountManager.BusinessLogic.Tests\AccountManager.BusinessLogic.Tests.csproj", "{2CC917A1-B154-402E-8D7F-576F0A494C55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{72A5CB68-8736-4810-B8BF-5D0E7870973F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72A5CB68-8736-4810-B8BF-5D0E7870973F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72A5CB68-8736-4810-B8BF-5D0E7870973F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC917A1-B154-402E-8D7F-576F0A494C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC917A1-B154-402E-8D7F-576F0A494C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC917A1-B154-402E-8D7F-576F0A494C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC917A1-B154-402E-8D7F-576F0A494C55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2CC917A1-B154-402E-8D7F-576F0A494C55} = {2C81583A-52B1-49DD-8961-FF4239C7E9DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF21DAB-53CB-4295-90AB-0CE0B6CB5B15}

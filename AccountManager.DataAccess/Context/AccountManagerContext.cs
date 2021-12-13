@@ -10,8 +10,8 @@ namespace AccountManager.DataAccess.Context
         //public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Project> Projects { get; set; }
-
+        public virtual DbSet<Project> Projects { get; set; }
+        public AccountManagerContext(){ }
         public AccountManagerContext(DbContextOptions<AccountManagerContext> options) : base(options)
         {
             //Database.EnsureDeleted();

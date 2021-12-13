@@ -27,7 +27,7 @@ namespace WebAppAccountManager.Controllers
         [Route("api/projects")]
         [Authorize(Policy = "BasicAuthentication")]
         [Authorize(AuthenticationSchemes = "BasicAuthentication")]
-        [Authorize(Roles = "Admin, Manager, Employee")]
+        //[Authorize(Roles = "Admin, Manager, Employee")]
         public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetProjectsAsync()
         {
             var items = await _projectService.GetProjectsAsync();
