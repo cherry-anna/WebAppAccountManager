@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace AccountManager.BusinessLogic.XMLSerialization
@@ -10,15 +7,12 @@ namespace AccountManager.BusinessLogic.XMLSerialization
     public class XMLList<T> : IList<T>, IXmlSerializable
     {
         private readonly IList<T> src;
-
         public XMLList(IList<T> wrapped)
         {
             if (wrapped == null) throw new ArgumentNullException("wrapped");
             src = wrapped;
         }
-
         public XMLList() : this(new List<T>()) { }
-
         public void Update(IList<T> target)
         {
             if (target == null) throw new ArgumentNullException("target");
@@ -50,12 +44,10 @@ namespace AccountManager.BusinessLogic.XMLSerialization
             }
         }
         #region IXmlSerializable Members  
-
         System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
         }
-
         void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
         {
             if (reader.IsEmptyElement || reader.Read() == false)
@@ -68,7 +60,6 @@ namespace AccountManager.BusinessLogic.XMLSerialization
             }
             reader.ReadEndElement();
         }
-
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
         {
             if (src.Count == 0)
@@ -82,22 +73,18 @@ namespace AccountManager.BusinessLogic.XMLSerialization
         #endregion
 
         #region IList<T> Members  
-
         int IList<T>.IndexOf(T item)
         {
             return src.IndexOf(item);
         }
-
         void IList<T>.Insert(int index, T item)
         {
             src.Insert(index, item);
         }
-
         void IList<T>.RemoveAt(int index)
         {
             src.RemoveAt(index);
         }
-
         T IList<T>.this[int index]
         {
             get { return src[index]; }
@@ -106,37 +93,30 @@ namespace AccountManager.BusinessLogic.XMLSerialization
         #endregion
 
         #region ICollection<T> Members  
-
         void ICollection<T>.Add(T item)
         {
             src.Add(item);
         }
-
         void ICollection<T>.Clear()
         {
             src.Clear();
         }
-
         bool ICollection<T>.Contains(T item)
         {
             return src.Contains(item);
         }
-
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
             src.CopyTo(array, arrayIndex);
         }
-
         int ICollection<T>.Count
         {
             get { return src.Count; }
         }
-
         bool ICollection<T>.IsReadOnly
         {
             get { return src.IsReadOnly; }
         }
-
         bool ICollection<T>.Remove(T item)
         {
             return src.Remove(item);
@@ -144,7 +124,6 @@ namespace AccountManager.BusinessLogic.XMLSerialization
         #endregion
 
         #region IEnumerable<T> Members  
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return src.GetEnumerator();
@@ -152,7 +131,6 @@ namespace AccountManager.BusinessLogic.XMLSerialization
         #endregion
 
         #region IEnumerable Members  
-
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return ((System.Collections.IEnumerable)src).GetEnumerator();

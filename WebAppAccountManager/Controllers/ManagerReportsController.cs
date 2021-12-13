@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace WebAppAccountManager.Controllers
@@ -50,6 +51,45 @@ namespace WebAppAccountManager.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("api/managerreports/download/projects/{projectId}")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<ActionResult> DownloadManagerReportByProjectAsync(int projectId)
+        {
+            string filePath = await _reportService.GetPathOfFileManagerReportByProjectAsync(projectId);
+
+            var content = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(new MemoryStream(content), "application/xml", Path.GetFileName(filePath));
+        }
+
+        [HttpGet]
+        [Route("api/managerreports/download/users/{userId}")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<ActionResult> DownloadManagerReportByUserAsync(int userId)
+        {
+            string filePath = await _reportService.GetPathOfFileManagerReportByUserAsync(userId);
+
+            var content = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(new MemoryStream(content), "application/xml", Path.GetFileName(filePath));
+        }
+
+        [HttpGet]
+        [Route("api/managerreports/download/month")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<ActionResult> DownloadManagerReportByMonthAsync(int month, int year)
+        {
+            string filePath = await _reportService.GetPathOfFileManagerReportByMonthAsync(month, year);
+
+            var content = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(new MemoryStream(content), "application/xml", Path.GetFileName(filePath));
+
+
+
+
+            //var items = await _reportService.GetManagerReportByMonthAsync(month, year);
+            //var result = _mapper.Map<IEnumerable<ManagerReportByMonth>>(items);
+            //return Ok(result);
+        }
 
 
     }

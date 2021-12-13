@@ -29,9 +29,6 @@ namespace AccountManager.DataAccess.Context
             modelBuilder.Entity<Report>(r =>
             {
                 r.HasKey(x => x.Id);
-                //r.HasOne(x => x.Employee)
-                  //  .WithMany(u => u.)
-                    //.HasForeignKey(x => x.UserId);
                 r.Property(x => x.Description)
                     .HasMaxLength(100);
             });
@@ -48,7 +45,6 @@ namespace AccountManager.DataAccess.Context
                     new IdentityRole<int> { Id = 2, Name = "Manager", NormalizedName = "Manager".ToUpper() },
                     new IdentityRole<int> { Id = 3, Name = "Employee", NormalizedName = "Employee".ToUpper() }
                     );
-                //r.HasData(new IdentityRole<int>("Admin") { Id = 1}, new IdentityRole<int>("Manager") { Id = 2 }, new IdentityRole<int>("Employee") { Id = 3 });
             });
 
             var hasher = new PasswordHasher<User>();

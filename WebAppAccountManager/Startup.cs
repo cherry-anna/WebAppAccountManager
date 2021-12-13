@@ -18,6 +18,7 @@ using WebAppAccountManager.AuthenticationHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Any;
 using WebAppAccountManager.Converter;
+using WebAppAccountManager.CustomExceptionMiddleware;
 
 namespace WebAppAccountManager
 {
@@ -119,7 +120,7 @@ namespace WebAppAccountManager
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAppAccountManager v1"));
             }
-            
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
 
             app.UseRouting();

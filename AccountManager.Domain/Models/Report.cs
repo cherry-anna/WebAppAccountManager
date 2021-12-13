@@ -20,7 +20,7 @@ namespace AccountManager.Domain.Models
         public string Description { get; set; }
         public Employee Employee { get; set; }
         public Project Project { get; set; }
-
+        public bool IsActive { get; set; }
         private int _duration;
         public int Duration { 
             get { return _duration; } 
@@ -31,7 +31,10 @@ namespace AccountManager.Domain.Models
             }
         }
         public DateTime UpdateDate { get; set; }
-        public Report() { }
+        public Report() 
+        {
+            IsActive = true;
+        }
         public Report(Employee employee, Project project, DateTime jobDate, int duration, string description)
         {
             Employee = employee;
@@ -40,6 +43,7 @@ namespace AccountManager.Domain.Models
             Duration = duration;
             Description = description;
             UpdateDate = DateTime.Now;
+            IsActive = true;
         }
 
         public Report(Employee employee, Project project, DateTime jobDate,

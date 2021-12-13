@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AccountManager.BusinessLogic.Services.Interfaces;
 using AccountManager.DataAccess.Context;
+using AccountManager.Domain.Exceptions;
 using AccountManager.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,17 +25,13 @@ namespace AccountManager.BusinessLogic.Services.Implementation
         }
         public async Task<User> AuthenticateUserAsync(string name, string password)
         {
-
             var result = await _signInManager.PasswordSignInAsync(name, password, true, false);
             if(!result.Succeeded)
             {
-                throw new Exception();
+                throw new ExceptionAccountManager((int)HttpStatusCode.Unauthorized, $"Login or password is invalid.");
             }
             return await _signInManager.UserManager.FindByNameAsync(name);
-            
         }
-
-
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
             return await _context.Users.Include(u => u.Employees).ThenInclude(e => e.Project).AsNoTracking().ToListAsync<User>();
@@ -56,7 +54,7 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             var result = await _signInManager.UserManager.AddToRoleAsync(insertedItem.Entity, role.Name);
             if (!result.Succeeded)
             {
-                throw new Exception("The role is not assigned to the user.");
+                throw new ExceptionAccountManager((int)HttpStatusCode.InternalServerError, $"The role is not assigned to the user.");
             }
 
             return insertedItem.Entity;
@@ -66,11 +64,10 @@ namespace AccountManager.BusinessLogic.Services.Implementation
             User user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
-                throw new Exception("User is not found.");
+                throw new ExceptionAccountManager((int)HttpStatusCode.NotFound, $"User with ID-{userId} not found.");
             }
 
             // update only name or password, or both 
-                      
             if (name != "" & user.UserName != name)
             {
                 user.UserName = name;
@@ -85,34 +82,29 @@ namespace AccountManager.BusinessLogic.Services.Implementation
                     user.PasswordHash = passwordHash;
                 }
             }
-
             await _context.SaveChangesAsync();
         }
-
         public async Task ChangeUserPasswordAsync(int userId, string oldPassword, string newPassword)
         {
             User user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
-                throw new Exception("User is not found.");
+                throw new ExceptionAccountManager((int)HttpStatusCode.NotFound, $"User with ID-{userId} not found.");
             }
-
             var hasher = new PasswordHasher<User>();
             string passwordHash = hasher.HashPassword(null, oldPassword);
             if (passwordHash != user.PasswordHash)
             {
-                throw new Exception("Password is invalid.");
+                throw new ExceptionAccountManager((int)HttpStatusCode.BadRequest, $"Password is invalid.");
             }
             user.PasswordHash = hasher.HashPassword(null, newPassword);
             await _context.SaveChangesAsync();
         }
-
         public async Task DeleteUserAsync(int userId)
         {
             User user = _context.Users.FirstOrDefault(u => u.Id == userId);
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
-
     }
 }
