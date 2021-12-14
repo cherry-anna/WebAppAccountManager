@@ -33,6 +33,11 @@ namespace AccountManager.BusinessLogic.Services.Implementation
         }
         public async Task<IEnumerable<Report>> GetReportsByUserIdAsync(int userId)
         {
+            bool userWithThisIDExist = _context.Users.Any(u => u.Id == userId);
+            if (!userWithThisIDExist)
+            {
+                throw new ExceptionAccountManager((int)HttpStatusCode.NotFound, $"User with ID - {userId} does not exist.");
+            }
             return await _context.Reports.Where(r => r.Employee.UserId == userId && r.IsActive).Include(r => r.Project).Include(r => r.Employee)
                 .AsNoTracking().ToListAsync<Report>();
         }
@@ -54,7 +59,9 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 
             if ((registeredMinutes + duration.TotalMinutes) > maxMinutesPerDay)
             {
-                throw new ExceptionAccountManager((int)HttpStatusCode.Conflict, $"It is impossible to register for a day more than 24 hours. For {jobDate.ToString("MMMM dd, yyyy")} total registered - {registeredMinutes}.");
+                int hours = registeredMinutes / 60;
+                int minutes = registeredMinutes % 60;
+                throw new ExceptionAccountManager((int)HttpStatusCode.Conflict, $"It is impossible to register for a day more than 24 hours. For {jobDate.ToString("MMMM dd, yyyy")} total registered - {hours} hours {minutes} minutes.");
             }
 
             if (startJobTime.HasValue)
@@ -133,7 +140,9 @@ namespace AccountManager.BusinessLogic.Services.Implementation
 
                 if ((registeredMinutes - report.Duration + duration.TotalMinutes) > maxMinutesPerDay)
                 {
-                    throw new ExceptionAccountManager((int)HttpStatusCode.Conflict, $"It is impossible to register for a day more than 24 hours. For {jobDate.ToString("MMMM dd, yyyy")} total registered - {registeredMinutes}.");
+                    int hours = registeredMinutes / 60;
+                    int minutes = registeredMinutes % 60;
+                    throw new ExceptionAccountManager((int)HttpStatusCode.Conflict, $"It is impossible to register for a day more than 24 hours. For {jobDate.ToString("MMMM dd, yyyy")} total registered - {hours} hours {minutes} minutes.");
                 }
                 report.Duration = GetRoundedMinutes(duration);
                 isModelChange = true;

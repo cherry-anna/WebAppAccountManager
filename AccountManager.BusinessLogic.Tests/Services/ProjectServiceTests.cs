@@ -2,70 +2,131 @@
 using AccountManager.DataAccess.Context;
 using AccountManager.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+
 
 namespace AccountManager.BusinessLogic.Tests.Services
 {
-    public class ProjectServiceTests
+    public class ProjectServiceTests : IDisposable
     {
-        private readonly Mock<AccountManagerContext> _contexMock;
+
+        private readonly AccountManagerContext _accountManagerContext;
         private readonly ProjectService _service;
 
         public ProjectServiceTests()
         {
-
-            //var optionsBuilder = new DbContextOptionsBuilder<AccountManagerContext>();
-            //_contexMock = new Mock<AccountManagerContext>(optionsBuilder.Options);
-
-            //// var options = new DbContextOptionsBuilder<AccountManagerContext>()
-            ////.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-            ////.Options;
-            //// DbContextOptions<AccountManagerContext> contexOptions = new DbContextOptionsBuilder<AccountManagerContext>().Options;
-            //// _contexMock = new Mock<AccountManagerContext>(contexOptions);
-            //_service = new ProjectService(_contexMock.Object);
+            DbContextOptions<AccountManagerContext> dbContextOptions = new DbContextOptionsBuilder<AccountManagerContext>()
+           .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+           .Options;
+            _accountManagerContext = new AccountManagerContext(dbContextOptions);
+           // if(_accountManagerContext.Projects.Count()==0)
+            SeedDb();
+            _service = new ProjectService(_accountManagerContext);
         }
-
+        public void Dispose()
+        {
+            _accountManagerContext.Dispose();
+        }
         [Fact]
         public async void GetProjectsAsync_Exist_Passed()
         {
-            //Arrange
-            var data = new List<Project>
-             {
-             new Project { Name = "BBB" },
-             new Project { Name = "ZZZ" },
-             new Project { Name = "AAA" },
-             }.AsQueryable();
-            var mockSet = new Mock<DbSet<Project>>();
-            mockSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
-
-            // mockSet.Setup(m => m.Include(It.IsAny<String>())).Returns(mockSet.Object);
-           // mockSet.As<IAsyncEnumerable<Project>>().Setup(m => m.GetAsyncEnumerator(It.IsAny<System.Threading.CancellationToken>()).Returns((IAsyncEnumerator<Project>)data.AsAsyncEnumerable().GetAsyncEnumerator()));
-
-
-            var mockContext = new Mock<AccountManagerContext>();
-            mockContext.SetupGet(c => c.Projects).Returns(mockSet.Object);
-
-            var service = new ProjectService(mockContext.Object);
-
-
+            //Arrange
             //Act
-            var projects = await service.GetProjectsAsync();
-            //Assert
-            Assert.Equal(3, projects.Count());
-            Assert.Equal("AAA", projects.ElementAt(0).Name);
-            Assert.Equal("BBB", projects.ElementAt(1).Name);
-            Assert.Equal("ZZZ", projects.ElementAt(2).Name);
+            var projects = await _service.GetProjectsAsync();
+            //Assert
+            Assert.Single(projects);
+            Assert.Equal("Project 1", projects.ElementAt(0).Name);
+        }
+        [Fact]
+        public async void CreateProjectAsync_Exist_Passed()
+        {
+            //Arrange
+            string name = "NewProject";
+            string description = "NewProject description";
+            //Act
+            Project project = await _service.CreateProjectAsync(name, description);
+            //Assert
+            Assert.Equal("NewProject", project.Name);
+        }
+        [Fact]
+        public async void CreateProjectAsync_ProjectWithThisNameExist_ExceptionIsThrown()
+        {
+            //Arrange
+            string name = "Project 1";
+            string description = "NewProject description";
+            //Act
+            var exception = await Record.ExceptionAsync(() => _service.CreateProjectAsync(name, description));
+            //Assert
+            Assert.NotNull(exception);
+            Assert.Equal("A project with the same name already exists.", exception.Message);
+        }
+        [Fact]
+        public async void AddUserToProjectAsync_Exist_Passed()
+        {
+            //Arrange
+            int projectId = 1;
+            int userId = 3;
+            decimal rate = 50;
+            string position = "director";
+            //Act
+            await _service.AddUserToProjectAsync(projectId, userId, rate, position);
+            //Assert
+            Assert.True(_accountManagerContext.Employees.Any(e => e.Id == 1 && e.ProjectId == 1));
+        }
+        [Fact]
+        public async void AddUserToProjectAsync_UserWithIDNotFound_ExceptionIsThrown()
+        {
+            //Arrange
+            int projectId = 1;
+            int notExistsUserId = 5;
+            decimal rate = 50;
+            string position = "director";
+            //Act
+            var exception = await Record.ExceptionAsync(() => _service.AddUserToProjectAsync(projectId, notExistsUserId, rate, position));
+            //Assert
+            Assert.NotNull(exception);
+            Assert.Equal("User with ID-5 not found.", exception.Message);
+        }
+        [Fact]
+        public async void AddUserToProjectAsync_ProjectWithIDNotFound_ExceptionIsThrown()
+        {
+            //Arrange
+            int notExistsProjectId = 2;
+            int userId = 3;
+            decimal rate = 50;
+            string position = "director";
+            //Act
+            var exception = await Record.ExceptionAsync(() => _service.AddUserToProjectAsync(notExistsProjectId, userId, rate, position));
+            //Assert
+            Assert.NotNull(exception);
+            Assert.Equal("Project with ID-2 not found.", exception.Message);
+        }
+        private void SeedDb()
+        {
+            List<User> users = new List<User>
+                {
+            new User { UserName = "User 1" },
+            new User {  UserName = "User 2" },
+            new User { UserName = "User 3" }
+        };
+            _accountManagerContext.AddRange(users);
+            _accountManagerContext.SaveChanges();
+
+            List<Employee> employees = new List<Employee>
+                {
+            new Employee { UserId = 1,ProjectId =1,Position="engineer",Rate = 20.0M },
+            new Employee { UserId = 2,ProjectId =1,Position="mechanic",Rate = 15.0M }
+        };
+            List<Project> projects = new List<Project>
+                {
+            new Project { Name = "Project 1",Description = "Description Project 1",Employees = employees}
+        };
+            _accountManagerContext.AddRange(projects);
+            _accountManagerContext.SaveChanges();
+
         }
     }
-
-
 }

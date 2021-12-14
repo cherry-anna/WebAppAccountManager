@@ -82,15 +82,6 @@ namespace WebAppAccountManager.Controllers
 
             var content = await System.IO.File.ReadAllBytesAsync(filePath);
             return File(new MemoryStream(content), "application/xml", Path.GetFileName(filePath));
-
-
-
-
-            //var items = await _reportService.GetManagerReportByMonthAsync(month, year);
-            //var result = _mapper.Map<IEnumerable<ManagerReportByMonth>>(items);
-            //return Ok(result);
         }
-
-
     }
 }

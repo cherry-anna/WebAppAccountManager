@@ -23,6 +23,12 @@ namespace AccountManager.BusinessLogic.Services.Implementation
         }
         public async Task<Project> CreateProjectAsync(string name, string description)
         {
+            bool IsProjectWithThisNameExist = await _context.Projects.AnyAsync(p => p.Name == name);
+            if (IsProjectWithThisNameExist)
+            {
+                throw new ExceptionAccountManager((int)HttpStatusCode.Conflict, $"A project with the same name already exists.");
+            }
+
             var item = new Project
             {
                 Name = name,
